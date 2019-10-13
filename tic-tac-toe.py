@@ -5,8 +5,7 @@ class game:
 #Initialize the board and all variables
   def __init__(self):
     self.board = [[0,0,0],[0,0,0],[0,0,0]]
-    self.exit = 1
-    self.turn = 0
+    self.no_exit = True
     self.players = ['X', 'O'] # 'X' is the User and 'O' the computer
     self.positionsX = []
     self.positionsO = []
@@ -48,154 +47,114 @@ class game:
   def checkLine(self, line):
     if line.count('X') == 3:
       print 'Player 1 wins the game'
-      self.exit = 0
+      self.no_exit = False
     elif line.count('O') == 3:
       print 'Player 2 wins the game'
-      self.exit = 0
+      self.no_exit = False
     return
 
-  def sumLine(self, line):
-    return line.count('O')
-
-
-  '''
-  Funtion for the computer to decide in wich position locate the symbol 'O'
-  TODO: to be impoved
-  def machineMove(self):
-    # If there is nothing in the central position --> fill the center
-    if self.board[1][1] == 0:
-      move = [1,1]
-      return move
-    #If there is any row with two 'O' --> complete the line || If there is a row with two 'X' --> break the line
-    for i in range(len(self.board)):
-      if self.board[i].count('O') == 2:
-        for j in range(len(self.board[i])):
-          if self.board[i][j] == 0:
-            move = [i,j]
-            return move
-      if self.board[i].count('X') == 2:
-        for j in range(len(self.board[i])):
-          if self.board[i][j] == 0:
-            move = [i,j]
-            return move
-      #Otherwise could be a column or diagonal with two symbols 'X'
-      #TODO check if there are already two symbols 'O' to complete the line
-      #Check columns 
-      if self.sumLine([self.board[0][i], self.board[1][i], self.board[2][i]]) == 2:
-        print self.sumLine([self.board[i][0], self.board[i][0], self.board[i][0]])
-        for j in range(len(self.board[i])):
-          if self.board[j][i] == 0:
-            move = [j,i]
-            return move
-      #Check diagonals
-      if self.sumLine([self.board[0][0], self.board[1][1], self.board[2][2]]) == 2:
-        for j in range(len(self.board[i])):
-          if self.board[j][j] == 0:
-            move = [j,j]
-            return move
-      elif self.sumLine([self.board[0][-1], self.board[1][-2], self.board[2][-3]]) == 2:
-        for j in range(-1,-3):
-          if self.board[i][j] == 0:
-            move = [i,j]
-            return move
-    #Else put the X in somewhere else
-    x = random.choice([0,1,2])
-    y = random.choice([0,1,2])
-    if self.board[x][y] == 0:
-      move = [x,y]      
-      return move
-    # TODO: check if the random is already taken, chose another
-    # TODO: If the board is completed --> stalemate/tie
-    '''
-
-  def machineMove(self):
-    for i in range(len(self.board)):
-        for j in range(len(self.board[i])):
-          if self.board[i][j] == 'X':
-            self.positionsX.append([i,j])
-          elif self.board[i][j] == 'O':
-            self.positionsO.append([i,j])
-    if len(self.positionsO) == 0:
-      x = random.choice([0,1,2])
-      y = random.choice([0,1,2])
-      move = [x,y]
-      self.positionsX.append([x,y])
-      return move
-    elif (len(self.positionsO) == 1) and (len(self.positionsX) == 0):
-      #'O' in center position
-      if self.positionsO[1] == [1,1]:
-        x = random.choice([0,2])
-        y = random.choice([0,2])
-        self.positionsX.append([x,y])
-        return [x,y]
-      else:
-        self.positionsX.append([1,1])
-        return [x,y]
-    #elif (len(self.positionsO) == 1) and (len(self.positionsX) == 1):
-    #elif (len(self.positionsO) == 2) and (len(self.positionsX) == 1):
-    #If there is any row with two 'O' --> complete the line || If there is a row with two 'X' --> break the line
+  def isThereTwo(self, line):
+    if line.count('O') == 2:
+      return True
+    elif line.count('X') == 2:
+      return True
     else:
+      return False
+  
+  def clearPositions(self):
+    self.positionsX = []
+    self.positionsO = []
+
+  def machineMove(self):
+    for i in range(len(self.board)):
+    #Check positions of 'O' and 'X' in the board
+      for j in range(len(self.board[i])):
+        if self.board[i][j] == 'X':
+          self.positionsX.append([i,j])
+        elif self.board[i][j] == 'O':
+          self.positionsO.append([i,j])
+    #If there is any row with two 'O' --> complete the line || If there is a row with two 'X' --> break the line
       for i in range(len(self.board)):
         if self.board[i].count('O') == 2:
           for j in range(len(self.board[i])):
             if self.board[i][j] == 0:
               move = [i,j]
+              self.clearPositions()
               return move
         if self.board[i].count('X') == 2:
           for j in range(len(self.board[i])):
             if self.board[i][j] == 0:
               move = [i,j]
+              self.clearPositions()
               return move
         #Check columns 
-        if self.sumLine([self.board[0][i], self.board[1][i], self.board[2][i]]) == 2:
-          print self.sumLine([self.board[i][0], self.board[i][0], self.board[i][0]])
+        if self.isThereTwo([self.board[0][i], self.board[1][i], self.board[2][i]]):
           for j in range(len(self.board[i])):
             if self.board[j][i] == 0:
               move = [j,i]
+              self.clearPositions()
               return move
-        #Check diagonals
-        if self.sumLine([self.board[0][0], self.board[1][1], self.board[2][2]]) == 2:
-          for j in range(len(self.board[i])):
-            if self.board[j][j] == 0:
-              move = [j,j]
-              return move
-        elif self.sumLine([self.board[0][-1], self.board[1][-2], self.board[2][-3]]) == 2:
-          for j in range(-1,-3):
-            if self.board[i][j] == 0:
-              move = [i,j]
-              return move
-    return [1,2]
+    #Check diagonals
+    if self.isThereTwo([self.board[0][0], self.board[1][1], self.board[2][2]]):
+      for j in range(len(self.board)):
+        if self.board[j][j] == 0:
+          move = [j,j]
+          self.clearPositions()
+          return move
+    if self.isThereTwo([self.board[0][2], self.board[1][1], self.board[2][0]]):
+      for idx, j in enumerate(range(2,-1,-1)):
+        if self.board[idx][j] == 0:
+          move = [idx,j]
+          self.clearPositions()
+          return move
+    if (len(self.positionsO) == 0) and (len(self.positionsX) == 0):
+      x = random.choice([0,1,2])
+      y = random.choice([0,1,2])
+      move = [x,y]
+      self.clearPositions()
+      return move
+    elif (len(self.positionsO) == 0) and (len(self.positionsX) == 1):
+      #'O' in center position
+      if self.positionsX[0] == [1,1]:
+        x = random.choice([0,2])
+        y = random.choice([0,2])
+        self.clearPositions()
+        return [x,y]
+      else:
+        #TODO: better decision to take in this place
+        self.clearPositions()
+        return [1,1]
+    return self.defaultCase()
 
-    
-
-
-
-
+  def defaultCase (self):    
+    for i in range(len(self.board)):
+      for j in range(len(self.board[i])):
+        if self.board[i][j] == 0:
+          self.clearPositions()
+          return [i,j]
 
 
 #----------------TEST--------------------------
 g1 = game()
 g1.drawBoard()
-#player = random.choice ([0,1])
-player = 0
+player = random.choice ([0,1])
 
 
-while (g1.exit):
-  if player == 0:                             # The User
+#TODO, repeat again when movement not available
+while g1.no_exit:
+  if player == 0 and g1.no_exit:                             # The User
     print "Set position x,y axes",
     move = input()
     if 0 <= move[0] and move[1] < 3:
       g1.setMove(move, player)
       g1.checkMatrix()
-      sleep(2)
-      g1.turn += 1
+      sleep(1)
       player = 1
     else:
       print 'Movement out of board'
-  if player == 1:                              # The Computer
+  if player == 1 and g1.no_exit:                              # The Computer
     move = g1.machineMove()
-    print move
-    g1.setMove(move, player)
-    g1.checkMatrix()
-    g1.turn += 1
-    player = 0
+    if move != None:
+      g1.setMove(move, player)
+      g1.checkMatrix()
+      player = 0
