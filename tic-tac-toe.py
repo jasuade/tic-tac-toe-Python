@@ -29,9 +29,11 @@ class game:
     y = move[1]
     if self.board[x][y] != 0:
       print 'Invalid move: position already held'
+      return False
     else:
       self.board[x][y] = self.players[player]
-    self.drawBoard()
+      self.drawBoard()
+      return True
 
 #Check if there is a line, there is a winner
   def checkMatrix(self):
@@ -135,26 +137,38 @@ class game:
 
 
 #----------------TEST--------------------------
-g1 = game()
-g1.drawBoard()
-player = random.choice ([0,1])
 
+def main():
+  
+  g1 = game()
+  g1.drawBoard()
+  player = random.choice ([0,1])
 
-#TODO, repeat again when movement not available
-while g1.no_exit:
-  if player == 0 and g1.no_exit:                             # The User
-    print "Set position x,y axes",
-    move = input()
-    if 0 <= move[0] and move[1] < 3:
-      g1.setMove(move, player)
-      g1.checkMatrix()
-      sleep(1)
-      player = 1
+  while g1.no_exit:
+    if player == 0 and g1.no_exit:                             # The User
+      print "Set position x,y axes",
+      move = input()
+      if 0 <= move[0] and move[1] < 3:
+        if g1.setMove(move, player):
+          g1.checkMatrix()
+          sleep(1)
+          player = 1
+      else:
+        print 'Movement out of board'
+    if player == 1 and g1.no_exit:                              # The Computer
+      move = g1.machineMove()
+      if move != None:
+        if g1.setMove(move, player):
+          g1.checkMatrix()
+          player = 0
+  else:
+    print "Play another game? (yes/no)",
+    ans = raw_input()
+    if ans == 'yes':
+      main()
     else:
-      print 'Movement out of board'
-  if player == 1 and g1.no_exit:                              # The Computer
-    move = g1.machineMove()
-    if move != None:
-      g1.setMove(move, player)
-      g1.checkMatrix()
-      player = 0
+      quit()
+
+
+if __name__ == "__main__":
+    main()
