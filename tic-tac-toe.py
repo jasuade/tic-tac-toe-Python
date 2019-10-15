@@ -16,9 +16,11 @@ class game:
     for i in range(len(self.board)):
       for j in range(len(self.board[i])):
         print '|', 
-        if self.board[i][j] != 0:
-          print self.board[i][j],
-        else:
+        if self.board[i][j] == 1:
+          print self.players[0],
+        elif self.board[i][j] == -1:
+          print self.players[-1],
+        elif self.board[i][j] == 0:
           print ' ',
       print '| \n'
     print '------------- \n'
@@ -31,7 +33,7 @@ class game:
       print 'Invalid move: position already held'
       return False
     else:
-      self.board[x][y] = self.players[player]
+      self.board[x][y] = player
       self.drawBoard()
       return True
 
@@ -47,18 +49,18 @@ class game:
     self.checkLine([self.board[0][2], self.board[1][1], self.board[2][0]])
 
   def checkLine(self, line):
-    if line.count('X') == 3:
+    if line.count(1) == 3:
       print 'Player 1 wins the game'
       self.no_exit = False
-    elif line.count('O') == 3:
+    elif line.count(-1) == 3:
       print 'Player 2 wins the game'
       self.no_exit = False
     return
 
   def isThereTwo(self, line):
-    if line.count('O') == 2:
+    if line.count(-1) == 2:
       return True
-    elif line.count('X') == 2:
+    elif line.count(1) == 2:
       return True
     else:
       return False
@@ -71,19 +73,19 @@ class game:
     for i in range(len(self.board)):
     #Check positions of 'O' and 'X' in the board
       for j in range(len(self.board[i])):
-        if self.board[i][j] == 'X':
+        if self.board[i][j] == 1:
           self.positionsX.append([i,j])
-        elif self.board[i][j] == 'O':
+        elif self.board[i][j] == -1:
           self.positionsO.append([i,j])
     #If there is any row with two 'O' --> complete the line || If there is a row with two 'X' --> break the line
       for i in range(len(self.board)):
-        if self.board[i].count('O') == 2:
+        if self.board[i].count(-1) == 2:
           for j in range(len(self.board[i])):
             if self.board[i][j] == 0:
               move = [i,j]
               self.clearPositions()
               return move
-        if self.board[i].count('X') == 2:
+        if self.board[i].count(1) == 2:
           for j in range(len(self.board[i])):
             if self.board[i][j] == 0:
               move = [i,j]
@@ -142,25 +144,25 @@ def main():
   
   g1 = game()
   g1.drawBoard()
-  player = random.choice ([0,1])
+  player = random.choice ([1,-1])
 
   while g1.no_exit:
-    if player == 0 and g1.no_exit:                             # The User
+    if player == 1 and g1.no_exit:                             # The User
       print "Set position x,y axes",
       move = input()
       if 0 <= move[0] and move[1] < 3:
         if g1.setMove(move, player):
           g1.checkMatrix()
           sleep(1)
-          player = 1
+          player = -1
       else:
         print 'Movement out of board'
-    if player == 1 and g1.no_exit:                              # The Computer
+    if player == -1 and g1.no_exit:                              # The Computer
       move = g1.machineMove()
       if move != None:
         if g1.setMove(move, player):
           g1.checkMatrix()
-          player = 0
+          player = 1
   else:
     print "Play another game? (yes/no)",
     ans = raw_input()
