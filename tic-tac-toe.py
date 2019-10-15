@@ -47,20 +47,28 @@ class game:
     self.checkLine([self.board[0][2], self.board[1][2], self.board[2][2]])
     self.checkLine([self.board[0][0], self.board[1][1], self.board[2][2]])
     self.checkLine([self.board[0][2], self.board[1][1], self.board[2][0]])
+    if self.boardIsFull():
+      print 'End of the game: TIE'
+      self.no_exit = False
 
+  def boardIsFull(self):
+    for i in range(len(self.board)):
+      for j in range(len(self.board[i])):
+        if self.board[i][j] == 0:
+          return False
+    return True
+
+  #Aux function to check full spaces in the board
   def checkLine(self, line):
-    if line.count(1) == 3:
+    p1 = line.count(1) 
+    p2 = line.count(-1) 
+    if p1 == 3:
       print 'Player 1 wins the game'
       self.no_exit = False
-    elif line.count(-1) == 3:
+    elif p2 == 3:
       print 'Player 2 wins the game'
       self.no_exit = False
-    return
-
-  def isThereTwo(self, line):
-    if line.count(-1) == 2:
-      return True
-    elif line.count(1) == 2:
+    elif 2 in (p1 , p2):
       return True
     else:
       return False
@@ -77,6 +85,7 @@ class game:
           self.positionsX.append([i,j])
         elif self.board[i][j] == -1:
           self.positionsO.append([i,j])
+    #TODO: Check the O first, and then the X
     #If there is any row with two 'O' --> complete the line || If there is a row with two 'X' --> break the line
       for i in range(len(self.board)):
         if self.board[i].count(-1) == 2:
@@ -92,25 +101,26 @@ class game:
               self.clearPositions()
               return move
         #Check columns 
-        if self.isThereTwo([self.board[0][i], self.board[1][i], self.board[2][i]]):
+        if self.checkLine([self.board[0][i], self.board[1][i], self.board[2][i]]):
           for j in range(len(self.board[i])):
             if self.board[j][i] == 0:
               move = [j,i]
               self.clearPositions()
               return move
     #Check diagonals
-    if self.isThereTwo([self.board[0][0], self.board[1][1], self.board[2][2]]):
+    if self.checkLine([self.board[0][0], self.board[1][1], self.board[2][2]]):
       for j in range(len(self.board)):
         if self.board[j][j] == 0:
           move = [j,j]
           self.clearPositions()
           return move
-    if self.isThereTwo([self.board[0][2], self.board[1][1], self.board[2][0]]):
+    if self.checkLine([self.board[0][2], self.board[1][1], self.board[2][0]]):
       for idx, j in enumerate(range(2,-1,-1)):
         if self.board[idx][j] == 0:
           move = [idx,j]
           self.clearPositions()
           return move
+    # If there is no line with two symbols then:
     if (len(self.positionsO) == 0) and (len(self.positionsX) == 0):
       x = random.choice([0,1,2])
       y = random.choice([0,1,2])
@@ -130,7 +140,7 @@ class game:
         return [1,1]
     return self.defaultCase()
 
-  def defaultCase (self):    
+  def defaultCase (self):
     for i in range(len(self.board)):
       for j in range(len(self.board[i])):
         if self.board[i][j] == 0:
