@@ -2,15 +2,15 @@ import random
 from time import sleep
 
 class game:
-#Initialize the board and all variables
+  #Initialize the board and all variables
   def __init__(self):
     self.board = [[0,0,0],[0,0,0],[0,0,0]]
     self.no_exit = True
-    self.players = ['X', 'O'] # 'X' is the User and 'O' the computer
+    self.players = ['X', 'O'] #'X' is the User and 'O' the computer
     self.positionsX = []
     self.positionsO = []
 
-#Very ugly improved way to draw a board in the cmd (v2)
+  #Improved way to draw a board in the cmd (v2)
   def drawBoard(self):
     print '-------------\n'
     for i in range(len(self.board)):
@@ -25,23 +25,22 @@ class game:
       print '| \n'
     print '------------- \n'
 
-#Set the move on the board from the different players
+  #Set the move on the board from the different players
   def setMove(self, move, player):
     x = move[0]
     y = move[1]
     if self.board[x][y] != 0:
-      print 'Invalid move: position already held'
+      print 'Invalid choice: position already held'
       return False
     else:
       self.board[x][y] = player
       self.drawBoard()
       return True
 
-#Check if there is a line, there is a winner
+  #Check if there is a line, there is a winner
   def checkMatrix(self):
     for elem in self.board:
       self.checkLine(elem)
-    #Definitely this needs yo be improved
     self.checkLine([self.board[0][0], self.board[1][0], self.board[2][0]])
     self.checkLine([self.board[0][1], self.board[1][1], self.board[2][1]])
     self.checkLine([self.board[0][2], self.board[1][2], self.board[2][2]])
@@ -85,8 +84,9 @@ class game:
           self.positionsX.append([i,j])
         elif self.board[i][j] == -1:
           self.positionsO.append([i,j])
-    #TODO: Check the O first, and then the X
+    #Could check the O first, and then the X
     #If there is any row with two 'O' --> complete the line || If there is a row with two 'X' --> break the line
+    #Check rows
       for i in range(len(self.board)):
         if self.board[i].count(-1) == 2:
           for j in range(len(self.board[i])):
@@ -120,7 +120,7 @@ class game:
           move = [idx,j]
           self.clearPositions()
           return move
-    # If there is no line with two symbols then:
+    #If there is no line with two symbols then:
     if (len(self.positionsO) == 0) and (len(self.positionsX) == 0):
       x = random.choice([0,1,2])
       y = random.choice([0,1,2])
@@ -135,7 +135,7 @@ class game:
         self.clearPositions()
         return [x,y]
       else:
-        #TODO: better decision to take in this place
+        #Could be better decision to take in this place
         self.clearPositions()
         return [1,1]
     return self.defaultCase()
@@ -148,8 +148,6 @@ class game:
           return [i,j]
 
 
-#----------------TEST--------------------------
-
 def main():
   
   g1 = game()
@@ -158,7 +156,7 @@ def main():
 
   while g1.no_exit:
     if player == 1 and g1.no_exit:                             # The User
-      print "Set position x,y axes",
+      print "Set position (row,col) from 0 to 2: ",
       move = input()
       if 0 <= move[0] and move[1] < 3:
         if g1.setMove(move, player):
@@ -167,7 +165,7 @@ def main():
           player = -1
       else:
         print 'Movement out of board'
-    if player == -1 and g1.no_exit:                              # The Computer
+    if player == -1 and g1.no_exit:                             # The Computer
       move = g1.machineMove()
       if move != None:
         if g1.setMove(move, player):
